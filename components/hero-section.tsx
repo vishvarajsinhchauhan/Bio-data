@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import React, { useState, useRef, MouseEvent, TouchEvent } from "react"
 import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -54,7 +54,7 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
   }
 
   return (
-    <section
+    <motion.section
       id="hero"
       ref={sectionRef}
       className="relative min-h-screen flex flex-col items-center justify-center py-20 overflow-hidden"
@@ -132,7 +132,7 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   borderColor: "#d4af37",
                 }}
                 whileTap={{ scale: 0.98 }}
-                onTouchStart={createRipple}
+                onTouchStart={(e: TouchEvent) => createRipple(e)}
               >
                 <Image
                   src={profileImage || "/placeholder.svg"}
@@ -146,10 +146,10 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                     transformOrigin: "center center",
                     transition: "transform 8s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
-                  onMouseEnter={(e) => {
+                  onMouseEnter={(e: MouseEvent<HTMLImageElement>) => {
                     e.currentTarget.style.transform = "scale(1.1)"
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={(e: MouseEvent<HTMLImageElement>) => {
                     e.currentTarget.style.transform = "scale(1)"
                   }}
                 />
@@ -267,6 +267,6 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
           <SectionDivider />
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }
