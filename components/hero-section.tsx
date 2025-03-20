@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, MouseEvent, TouchEvent } from "react"
 import Image from "next/image"
-import { motion, type HTMLMotionProps } from "framer-motion"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { motion } from "framer-motion"
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import SectionDivider from "@/components/section-divider"
 import { useTouchRipple } from "@/hooks/use-touch-gestures"
@@ -16,9 +16,6 @@ interface HeroSectionProps {
   profileImage: string
   additionalImages: string[]
 }
-
-type MotionDivProps = HTMLMotionProps<"div">
-type MotionButtonProps = HTMLMotionProps<"button">
 
 export default function HeroSection({ name, intro, profileImage, additionalImages }: HeroSectionProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -42,67 +39,64 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
     setIsZoomed(!isZoomed)
   }
 
-  const motionDivProps: MotionDivProps = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.3 },
-  }
-
-  const motionButtonProps: MotionButtonProps = {
-    ...motionDivProps,
-    whileHover: {
-      scale: 1.02,
-      boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.3)",
-      borderColor: "#d4af37",
-    },
-    whileTap: { scale: 0.98 },
-  }
-
   return (
-    <div
-      ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center py-20 overflow-auto touch-auto"
-    >
+    <div ref={sectionRef} className="min-h-screen flex flex-col items-center justify-center py-20">
       <div className="absolute inset-0 bg-gradient-radial from-blue-50/50 to-transparent opacity-70 pointer-events-none" />
 
       <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <motion.div {...motionDivProps} className="text-center lg:text-left order-2 lg:order-1 mt-8 sm:mt-0">
+        <motion.div
+          className="text-center lg:text-left order-2 lg:order-1 mt-8 sm:mt-0"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <motion.h1
-            {...motionDivProps}
-            transition={{ duration: 0.3, delay: 0.1 }}
             className={cn(
               "text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold mb-6",
               "bg-clip-text text-transparent bg-gradient-to-r from-[#0f3460] to-[#0f3460]/80",
               "tracking-tight leading-tight"
             )}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
             {name}
           </motion.h1>
 
           <motion.p
-            {...motionDivProps}
-            transition={{ duration: 0.3, delay: 0.2 }}
             className="text-lg sm:text-xl md:text-2xl text-gray-700 leading-relaxed max-w-xl mx-auto lg:mx-0"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             {intro}
           </motion.p>
         </motion.div>
 
         <motion.div
-          {...motionDivProps}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
           className="flex justify-center order-1 lg:order-2"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <motion.button
-                {...motionButtonProps}
                 className={cn(
                   "relative cursor-pointer overflow-hidden rounded-2xl",
                   "border-4 border-[#b8860b] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.2)]",
                   "transition-all duration-300 ease-out w-[280px] h-[350px]"
                 )}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.3)",
+                  borderColor: "#d4af37",
+                }}
+                whileTap={{ scale: 0.98 }}
                 onTouchStart={(e: TouchEvent) => createRipple(e)}
               >
                 <Image
@@ -112,20 +106,12 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   height={350}
                   priority
                   sizes="280px"
-                  className="object-cover"
-                  onMouseEnter={(e: MouseEvent) => {
-                    const target = e.currentTarget as HTMLImageElement
-                    target.style.transform = "scale(1.1)"
-                  }}
-                  onMouseLeave={(e: MouseEvent) => {
-                    const target = e.currentTarget as HTMLImageElement
-                    target.style.transform = "scale(1.0)"
-                  }}
+                  className="object-cover w-full h-full"
                 />
               </motion.button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-4xl bg-white/95 backdrop-blur">
+            <DialogContent className="max-w-4xl bg-white/95 backdrop-blur p-0 sm:p-6">
               <div className="relative aspect-[3/4] w-full">
                 <Image
                   src={allImages[currentImageIndex]}
@@ -139,14 +125,25 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                 />
               </div>
 
-              <div className="flex justify-center gap-4 mt-4">
-                <Button variant="outline" size="icon" onClick={prevImage}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={toggleZoom}>
+              <div className="absolute top-2 right-2 flex gap-2">
+                <Button variant="outline" size="icon" onClick={toggleZoom} className="bg-white/80">
                   <ZoomIn className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" onClick={nextImage}>
+                <DialogClose asChild>
+                  <Button variant="outline" size="icon" className="bg-white/80">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DialogClose>
+              </div>
+
+              <div className="absolute left-2 top-1/2 -translate-y-1/2">
+                <Button variant="outline" size="icon" onClick={prevImage} className="bg-white/80">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Button variant="outline" size="icon" onClick={nextImage} className="bg-white/80">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
