@@ -137,7 +137,8 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                 <Image
                   src={profileImage || "/placeholder.svg"}
                   alt={name}
-                  fill
+                  width={280}
+                  height={350}
                   priority
                   sizes="(max-width: 768px) 280px, 350px"
                   className="object-cover transition-transform duration-700 ease-out profile-image"
@@ -269,4 +270,3 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
     </section>
   )
 }
-
