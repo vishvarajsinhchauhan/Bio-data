@@ -21,6 +21,7 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const allImages = [profileImage, ...additionalImages]
   const sectionRef = useRef<HTMLDivElement>(null)
   const { createRipple } = useTouchRipple()
@@ -37,6 +38,11 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
 
   const toggleZoom = () => {
     setIsZoomed(!isZoomed)
+  }
+
+  const handleImageError = () => {
+    console.error("Image failed to load:", allImages[currentImageIndex])
+    setImageError(true)
   }
 
   return (
@@ -100,21 +106,28 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                 onTouchStart={(e: TouchEvent) => createRipple(e)}
               >
                 <Image
-                  src={allImages[currentImageIndex]}
+                  src={allImages[currentImageIndex] + "?v=2"}
                   alt={`${name} - Photo ${currentImageIndex + 1}`}
                   width={280}
                   height={350}
                   priority
                   sizes="280px"
                   className="object-cover w-full h-full"
+                  onError={handleImageError}
+                  unoptimized={true}
                 />
+                {imageError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500">
+                    Image failed to load
+                  </div>
+                )}
               </motion.button>
             </DialogTrigger>
 
             <DialogContent className="max-w-4xl bg-white/95 backdrop-blur p-0 sm:p-6">
               <div className="relative aspect-[3/4] w-full">
                 <Image
-                  src={allImages[currentImageIndex]}
+                  src={allImages[currentImageIndex] + "?v=2"}
                   alt={`${name} - Photo ${currentImageIndex + 1}`}
                   fill
                   priority
@@ -122,7 +135,14 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                     "object-contain transition-all duration-300 ease-out",
                     isZoomed ? "scale-150" : "scale-100"
                   )}
+                  onError={handleImageError}
+                  unoptimized={true}
                 />
+                {imageError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500">
+                    Image failed to load
+                  </div>
+                )}
               </div>
 
               <div className="absolute top-2 right-2 flex gap-2">
