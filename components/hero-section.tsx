@@ -18,9 +18,9 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ name, intro, profileImage, additionalImages }: HeroSectionProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isZoomed, setIsZoomed] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
+  const [isZoomed, setIsZoomed] = useState<boolean>(false)
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const allImages = [profileImage, ...additionalImages]
   const sectionRef = useRef<HTMLElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
@@ -36,12 +36,12 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length)
+    setCurrentImageIndex((prev: number) => (prev + 1) % allImages.length)
     setIsZoomed(false)
   }
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length)
+    setCurrentImageIndex((prev: number) => (prev - 1 + allImages.length) % allImages.length)
     setIsZoomed(false)
   }
 
