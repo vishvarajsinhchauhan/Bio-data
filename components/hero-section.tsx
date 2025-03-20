@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useRef, MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react"
+import React, { useState, useRef, MouseEvent, TouchEvent } from "react"
 import Image from "next/image"
-import { motion, useScroll, useTransform, MotionStyle, HTMLMotionProps } from "framer-motion"
+import { motion, useScroll, useTransform, type AnimationProps } from "framer-motion"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
@@ -17,12 +17,10 @@ interface HeroSectionProps {
   additionalImages: string[]
 }
 
-type MotionSectionProps = HTMLMotionProps<"section">
-
 export default function HeroSection({ name, intro, profileImage, additionalImages }: HeroSectionProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
-  const [isZoomed, setIsZoomed] = useState<boolean>(false)
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const allImages = [profileImage, ...additionalImages]
   const sectionRef = useRef<HTMLElement>(null)
   const { createRipple } = useTouchRipple()
@@ -32,17 +30,17 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
     offset: ["start start", "end start"],
   })
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "5%"])
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95])
 
   const nextImage = () => {
-    setCurrentImageIndex((prev: number) => (prev + 1) % allImages.length)
+    setCurrentImageIndex((prev) => (prev + 1) % allImages.length)
     setIsZoomed(false)
   }
 
   const prevImage = () => {
-    setCurrentImageIndex((prev: number) => (prev - 1 + allImages.length) % allImages.length)
+    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length)
     setIsZoomed(false)
   }
 
@@ -50,19 +48,23 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
     setIsZoomed(!isZoomed)
   }
 
-  const imageStyle: MotionStyle = {
+  const imageStyle = {
     transformOrigin: "center center",
     transition: "transform 8s cubic-bezier(0.22, 1, 0.36, 1)",
   }
 
-  const motionProps: MotionSectionProps = {
-    id: "hero",
-    ref: sectionRef,
-    className: "relative min-h-screen flex flex-col items-center justify-center py-20 overflow-hidden",
+  const motionProps: AnimationProps = {
+    initial: { opacity: 1 },
+    animate: { opacity: 1 },
+    style: { willChange: "transform" },
   }
 
   return (
-    <motion.section {...motionProps}>
+    <motion.section
+      ref={sectionRef}
+      className="relative min-h-screen flex flex-col items-center justify-center py-20 overflow-visible touch-pan-y"
+      {...motionProps}
+    >
       <div className="absolute inset-0 bg-gradient-radial from-blue-50/50 to-transparent opacity-70 pointer-events-none" />
 
       <motion.div
@@ -74,9 +76,8 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 1,
-            ease: [0.22, 1, 0.36, 1],
-            delay: 0.2,
+            duration: 0.8,
+            ease: "easeOut",
           }}
         >
           <motion.h1
@@ -88,9 +89,9 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: 1,
-              ease: [0.22, 1, 0.36, 1],
-              delay: 0.4,
+              duration: 0.8,
+              ease: "easeOut",
+              delay: 0.2,
             }}
           >
             {name}
@@ -101,9 +102,9 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: 1,
-              ease: [0.22, 1, 0.36, 1],
-              delay: 0.6,
+              duration: 0.8,
+              ease: "easeOut",
+              delay: 0.4,
             }}
           >
             {intro}
@@ -115,9 +116,9 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
-            duration: 1,
-            ease: [0.22, 1, 0.36, 1],
-            delay: 0.4,
+            duration: 0.8,
+            ease: "easeOut",
+            delay: 0.2,
           }}
         >
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -135,7 +136,7 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   borderColor: "#d4af37",
                 }}
                 whileTap={{ scale: 0.98 }}
-                onTouchStart={(e: ReactTouchEvent<HTMLDivElement>) => createRipple(e)}
+                onTouchStart={(e: TouchEvent) => createRipple(e)}
               >
                 <Image
                   src={allImages[currentImageIndex] || "/placeholder.svg"}
@@ -146,11 +147,13 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   sizes="(max-width: 768px) 280px, 350px"
                   className="object-cover transition-transform duration-700 ease-out profile-image"
                   style={imageStyle}
-                  onMouseEnter={(e: ReactMouseEvent<HTMLImageElement>) => {
-                    e.currentTarget.style.transform = "scale(1.1)"
+                  onMouseEnter={(e: MouseEvent) => {
+                    const target = e.currentTarget as HTMLImageElement
+                    target.style.transform = "scale(1.1)"
                   }}
-                  onMouseLeave={(e: ReactMouseEvent<HTMLImageElement>) => {
-                    e.currentTarget.style.transform = "scale(1.0)"
+                  onMouseLeave={(e: MouseEvent) => {
+                    const target = e.currentTarget as HTMLImageElement
+                    target.style.transform = "scale(1.0)"
                   }}
                 />
               </motion.div>
