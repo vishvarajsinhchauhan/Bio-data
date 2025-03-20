@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useRef, MouseEvent, TouchEvent } from "react"
+import React, { useState, useRef, MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react"
 import Image from "next/image"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform, MotionStyle } from "framer-motion"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
@@ -51,6 +51,11 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
 
   const closeDialog = () => {
     setIsDialogOpen(false)
+  }
+
+  const imageStyle: MotionStyle = {
+    transformOrigin: "center center",
+    transition: "transform 8s cubic-bezier(0.22, 1, 0.36, 1)",
   }
 
   return (
@@ -132,7 +137,7 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   borderColor: "#d4af37",
                 }}
                 whileTap={{ scale: 0.98 }}
-                onTouchStart={(e: TouchEvent) => createRipple(e)}
+                onTouchStart={(e: ReactTouchEvent<HTMLDivElement>) => createRipple(e)}
               >
                 <Image
                   src={profileImage || "/placeholder.svg"}
@@ -142,15 +147,12 @@ export default function HeroSection({ name, intro, profileImage, additionalImage
                   priority
                   sizes="(max-width: 768px) 280px, 350px"
                   className="object-cover transition-transform duration-700 ease-out profile-image"
-                  style={{
-                    transformOrigin: "center center",
-                    transition: "transform 8s cubic-bezier(0.22, 1, 0.36, 1)",
-                  }}
-                  onMouseEnter={(e: MouseEvent<HTMLImageElement>) => {
+                  style={imageStyle}
+                  onMouseEnter={(e: ReactMouseEvent<HTMLImageElement>) => {
                     e.currentTarget.style.transform = "scale(1.1)"
                   }}
-                  onMouseLeave={(e: MouseEvent<HTMLImageElement>) => {
-                    e.currentTarget.style.transform = "scale(1)"
+                  onMouseLeave={(e: ReactMouseEvent<HTMLImageElement>) => {
+                    e.currentTarget.style.transform = "scale(1.0)"
                   }}
                 />
                 <div
