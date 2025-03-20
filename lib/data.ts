@@ -63,13 +63,13 @@ export const biodata: BiodataType = {
   name: "Chauhan Vishvarajsinh Vikramsinh",
   intro:
     "Greetings! I am a Computer Engineering graduate currently pursuing my Master's degree in Australia. I come from a traditional Rajput family and value our cultural heritage while embracing modern education and lifestyle.",
-  profileImage: "/images/profile1.png",
+  profileImage: "/images/profile1.jpg",
   additionalImages: [
-    "/images/profile2.png",
-    "/images/profile3.png",
-    "/images/profile4.png",
-    "/images/profile5.png",
-    "/images/profile6.png",
+    "/images/profile2.jpg",
+    "/images/profile3.jpg",
+    "/images/profile4.jpg",
+    "/images/profile5.jpg",
+    "/images/profile6.jpg",
   ],
   personalDetails: {
     birthdate: "June 27, 2003",
@@ -140,4 +140,3 @@ export const biodata: BiodataType = {
     email: "vishvarajsinh477@gmail.com",
   },
 }
-
